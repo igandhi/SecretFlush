@@ -36,11 +36,7 @@ mongoose.connect(uristring, function(err, res){
 var Message = require('./models/message');
 
 app.post('/send', function(req, res) {
-	var message = new Message({
-						venue.id: req.id, 
-						venue.name: req.name
-						username: req.username
-						message: req.message});
+	var message = new Message(req);
 	message.save();
 	console.log(message);
 	res.json({lol:true});
