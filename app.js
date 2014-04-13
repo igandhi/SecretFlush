@@ -33,13 +33,13 @@ mongoose.connect(uristring, function(err, res){
 		}
 });
 
-var Message = require('./models/message');
+var Message = require('./models/message.js');
 
 app.post('/send', function(req, res) {
-	var message = new Message(req);
+	var message = new Message(req.body);
 	message.save();
 	console.log(message);
-	res.json({lol:true});
+	res.json(Message.find());
 });
 
 /// catch 404 and forwarding to error handler
