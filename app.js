@@ -1,16 +1,18 @@
 var express = require('express');
+// var app = module.exports = express.createServer();
+var app = express();
 var http = require('http');
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+var mongoose = require('mongoose');
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var io = require('socket.io');
-var mongoose = require('mongoose');
-var app = express();
 var uristring = 'mongodb://localhost/test';
-server = http.createServer(app);
-io.listen(server);
+var events = require('events');
+// io.listen(server);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,11 +37,30 @@ mongoose.connect(uristring, function(err, res){
 
 var Message = require('./models/message.js');
 
+var eventEmitter = new events.EventEmitter();
+// var trigger = function trigger() {
+	io.sockets.on('connection', function(socket) {
+		var venueId;
+		socket.on('venId', function(data) {
+			venueId=data;
+		});
+		socket.emit('newMes', Message.find({'venue.id':venueId}, 'message'));
+	});
+// };
+
+// eventEmitter.on('testEm', trigger);
 app.post('/send', function(req, res) {
 	var message = new Message(req.body);
-	message.save();
-	console.log(message);
-	res.json(Message.find());
+	message.save(function(err) {
+		if (err) {
+			res.send(500, 'error');
+		} else{
+			res.send('success');
+			console.log(message);
+			// eventEmitter.emit('testEm', message.venue.id);
+			res.json(Message.find());
+		}
+	});
 });
 
 /// catch 404 and forwarding to error handler
@@ -71,6 +92,5 @@ app.use(function(err, req, res, next) {
     });
 });
 
-server.listen(3000);
-
-module.exports = app;
+// server.listen(3000);
+app.listen(3000);
