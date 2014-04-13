@@ -33,16 +33,16 @@ mongoose.connect(uristring, function(err, res){
 		}
 });
 
-var messageSchema = new mongoose.Schema({
-	venue: {name: String, id: String},
-	username: String,
-	message: String,
-	date: {type: Date, default: Date.now}	
-});
-
-var Message = mongoose.model('Message', messageSchema);
+var Message = require('./models/message');
 
 app.post('/send', function(req, res) {
+	var message = new Message({
+						venue.id: req.id, 
+						venue.name: req.name
+						username: req.username
+						message: req.message});
+	message.save();
+	console.log(message);
 	res.json({lol:true});
 });
 
