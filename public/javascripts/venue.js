@@ -29,9 +29,12 @@ $().ready(function() {
 
 	$('#send').click(function() {
 		var data = {};
-		data.id = venId;
-		data.name = venName;
-
+		data.venue = {};
+		data.venue.id = venId;
+		data.venue.name = venName;
+		data.message = "This is a test message, hoe";
+		data.username = "mastermind";
+		console.log(data);
 		$.ajax({
 			type:'POST',
 			data:JSON.stringify(data),
