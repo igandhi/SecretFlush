@@ -22,7 +22,7 @@ $(document).ready(function() {
 		venId = json.response.groups[0].items[0].id;
 		$('.results').append(json.response.groups[0].items[0].name);
 		venName = json.response.groups[0].items[0].name;
-		sendVenueInfo();
+		// sendVenueInfo();
 	});
 	$('#getLoc').click(function(event) {
 		// 
@@ -43,7 +43,6 @@ $(document).ready(function() {
 			url:'/send',
 			success:function(data) {
 				console.log('success');
-				console.log(JSON.stringify(data));
 			},
 			error: function(err) {
 				console.error(err);
@@ -52,12 +51,19 @@ $(document).ready(function() {
 	});
 	function sendVenueInfo() {
 		var socket = io.connect('http://localhost:3000'); 
-		socket.emit('venId', { my: 'data' });
+		// socket.emit('venId', { my: 'data' });
 		socket.on('newMes', function (data) {
 			$('#result').text(data);	
 			console.log(data);
 		});
 	}
+
+	var socket = io.connect('http://localhost:3000'); 
+	// socket.emit('venId', { my: 'data' });
+	socket.on('newMes', function (data) {
+		$('#result').text(data.message);	
+		console.log(data);
+	});
 });
 
 

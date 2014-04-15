@@ -12,7 +12,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var uristring = 'mongodb://localhost/test';
 var events = require('events');
-// io.listen(server);
+//io.listen(server);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,7 +21,6 @@ app.set('view engine', 'jade');
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
@@ -36,16 +35,40 @@ mongoose.connect(uristring, function(err, res){
 });
 
 var Message = require('./models/message.js');
+var query = Message.find({"venue.id": "4b154fe5f964a52070af23e3"});
 
-var eventEmitter = new events.EventEmitter();
+var fi = Message.find({'venue.id':'4b154fe5f964a52070af23e3'}, {message:1, _id:0})};
+var mess;
+io.sockets.on('connection', function(socket) {
+var stream = fi.stream();
+stream.on('data', function(doc) {
+	
+});
+	//
+	if(err) {
+		console.log(err);
+	} else {
+		socket.emit('newMes', {message: data.message});
+	}
+});
+
+});
+
+io.sockets.on('connection', function(socket){
+	socket.emit('newMes', {message: Message.find({'venue.id':'4b154fe5f964a52070af23e3'}, {message:1, _id:0})}); 
+		
+});
+
+// var eventEmitter = new events.EventEmitter();
 // var trigger = function trigger() {
-	io.sockets.on('connection', function(socket) {
-		var venueId;
-		socket.on('venId', function(data) {
-			venueId=data;
-		});
-		socket.emit('newMes', Message.find({'venue.id':venueId}, 'message'));
-	});
+	// io.sockets.on('connection', function(socket) {
+	// 	var venueId;
+	// 	socket.on('venId', function(data) {
+	// 		venueId=data;
+	// 	});
+	// 	socket.emit('newMes', Message.find({'venue.id':venueId}, 'message'));
+	// 	socket.emit('newMes', 'ddsdfdsffs');
+	// });
 // };
 
 // eventEmitter.on('testEm', trigger);
@@ -93,4 +116,4 @@ app.use(function(err, req, res, next) {
 });
 
 // server.listen(3000);
-app.listen(3000);
+server.listen(3000);
